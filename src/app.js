@@ -41,6 +41,8 @@ class Minefield {
 		this.remainingFlags = mineCount;
 		this.timer = 0;
 		this.minefieldElement.replaceChildren();
+
+		this.state = new Map();
 		
 		faceElement.classList.forEach((i) => {
 			faceElement.classList.remove(i);
@@ -64,6 +66,14 @@ class Minefield {
 				tileElement.dataset.dug = false;
 				tileElement.dataset.isMine = false;
 				tileElement.dataset.autoDigChecked = false;
+
+				this.state.set(`${x},${y}`, {
+					element: tileElement,
+					flagged: false,
+					dug: false,
+					isMine: false,
+					autoDigChecked: false
+				});
 
 				tileElement.addEventListener("mousedown", (event) => { this.tileInteract(event); });
 				tileElement.addEventListener("contextmenu", (event) => {
@@ -113,15 +123,7 @@ class Minefield {
 	}
 
 	queryTileElement(x, y) {
-		for (const tileColElement of this.minefieldElement.childNodes) {
-			for (const tileElement of tileColElement.childNodes) {
-				if (
-					(tileElement.dataset.x == x) &&
-					(tileElement.dataset.y == y)
-				) return tileElement;
-			}
-		}
-		return null;
+		return this.state.get(`${x},${y}`)?.element;
 	}
 
 	getAdjacentTiles(x, y) {
