@@ -4,6 +4,9 @@
 	--tile-color-hover: #afafaf;
 	--tile-color-dug: #c0c0c0;
 	--tile-color-dug-hover: #b0b0b0;
+
+	--face-size: 35px;
+	--info-bar-icon-size: 35px;
 }
 
 html, body {
@@ -20,6 +23,21 @@ h1, h2, h3, p {
 	display: flex;
 }
 
+#minefield-wrapper {
+	width: fit-content;
+	height: fit-content;
+}
+
+#info-bar {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	align-items: center;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
 #minefield {
 	display: flex;
 	flex-direction: row;
@@ -31,8 +49,79 @@ h1, h2, h3, p {
 	border-left: 1px solid var(--border-color);
 }
 
+#info {
+	margin-left: 5px;
+	margin-right: 10px;
+}
+
 #main-menu-ctx {
 	font-size: 15px;
+}
+
+#face-wrapper {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+#face {
+	width: var(--face-size);
+	height: var(--face-size);
+	background-image: url("../spritesheet.png");
+	background-repeat: no-repeat;
+	background-size: calc(var(--face-size) * 4) calc(var(--face-size) * 2);
+	image-rendering: pixelated;
+	background-position: 0px 0px;
+}
+#face.face-dead {
+	background-position: calc(0px - (var(--face-size) * 3)) 0px;
+}
+#face.face-win {
+	background-position: calc(0px - (var(--face-size) * 2)) 0px;
+}
+#face.face-suspense {
+	background-position: calc(0px - (var(--face-size))) 0px;
+}
+
+#flag-counter {
+	text-align: end;
+}
+
+#flag-icon {
+	max-width: 30px;
+	width: var(--info-bar-icon-size);
+	height: var(--info-bar-icon-size);
+	background-image: url("../spritesheet.png");
+	background-repeat: no-repeat;
+	background-size: calc(var(--info-bar-icon-size) * 4) calc(var(--info-bar-icon-size) * 2);
+	image-rendering: pixelated;
+	background-position: 0px calc(0px - var(--info-bar-icon-size));
+}
+
+#timer {
+	padding-left: 30px;
+}
+
+.info-bar-text-wrapper {
+	max-width: 60px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.info-text {
+	font-size: 16px;
+	color: darkslategray;
+	font-style: italic;
+	margin-bottom: 5px;
+}
+
+.info-bar-text {
+	font-weight: bold;
+	font-size: 20px;
+	width: 30px;
+	padding: 0;
+	padding-top: 5px;
 }
 
 .tile-col {
@@ -52,6 +141,10 @@ h1, h2, h3, p {
 	background-color: var(--tile-color);
 	border-right: 1px solid var(--border-color);
 	border-bottom: 1px solid var(--border-color);
+	background-image: none;
+	background-repeat: no-repeat;
+	background-size: calc(30px * 4) calc(30px * 2);
+	image-rendering: pixelated;
 }
 .tile:hover {
 	background-color: var(--tile-color-hover);
@@ -64,4 +157,12 @@ h1, h2, h3, p {
 }
 .tile.dug:hover {
 	background-color: var(--tile-color-dug);
+}
+.tile.mine {
+	background-image: url("../spritesheet.png");
+	background-position: -30px -30px;
+}
+.tile.flagged {
+	background-image: url("../spritesheet.png");
+	background-position: 0px -30px;
 }
