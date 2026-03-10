@@ -105,12 +105,18 @@ class Minefield {
 			faceElement.classList.add("face-suspense");
 			this.dig(x, y);
 		} else if (
-			event?.button === 2 ||
+			event?.button === 1 ||
 			event?.code === "KeyX"
+		) {
+			action = "chord";
+			this.chord(x, y);
+		} else if (
+			event?.button === 2 ||
+			event?.code === "KeyC"
 		) {
 			action = "flag";
 			this.toggleFlag(x, y);
-		}
+		} 
 		
 		console.log(
 			`[tile ${x},${y}]`,
@@ -175,6 +181,21 @@ class Minefield {
 		return output;
 	}
 
+	chord(x, y) {
+		const tileElement = this.queryTileElement(x, y);
+		const adjacentTiles = this.getAdjacentTiles(x, y);
+
+		let adjacentFlagCount = 0;
+		adjacentTiles.forEach((i) => {
+			if (JSON.parse(i.dataset.flagged)) adjacentFlagCount++;
+		});
+		if (adjacentFlagCount === JSON.parse(tileElement.dataset.adjacentMines)) {
+			adjacentTiles.forEach((i) => {
+				this.dig(JSON.parse(i.dataset.x), JSON.parse(i.dataset.y));
+			});
+		}
+	}
+
 	toggleFlag(x, y) {
 		const tileElement = this.queryTileElement(x, y);
 		if (!tileElement || JSON.parse(tileElement.dataset.dug)) return;
@@ -203,7 +224,7 @@ class Minefield {
 		}
 
 		if (JSON.parse(tileElement.dataset.flagged)) {
-			this.toggleFlag(x, y);
+			//this.toggleFlag(x, y);
 			return;
 		}
 
