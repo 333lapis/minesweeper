@@ -356,9 +356,9 @@ document.getElementById("save").addEventListener("click", () => {
 	navigator.clipboard.writeText(saveData);
 	console.log(saveData);
 });
-document.getElementById("save").addEventListener("mouseenter", () => {
+/*document.getElementById("save").addEventListener("mouseenter", () => {
 	mainMenuCtxElement.textContent = "save game (copies save data to clipboard)";
-});
+});*/
 
 
 document.getElementById("new-game-beginner").addEventListener("click", () => {
@@ -378,6 +378,9 @@ document.getElementById("new-game-expert").addEventListener("click", () => {
 });
 document.getElementById("new-game-expert").addEventListener("mouseenter", () => {
 	mainMenuCtxElement.textContent = "30x16 (99 mines)";
+});
+document.getElementById("new-game-custom").addEventListener("mouseenter", () => {
+	mainMenuCtxElement.textContent = "create a custom board";
 });
 
 document.querySelectorAll(".main-menu-btn").forEach((element) => {

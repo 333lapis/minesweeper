@@ -1,9 +1,22 @@
+@font-face {
+	font-family: Geist;
+	src: url(../font/Geist/Geist-VariableFont_wght.ttf);
+}
+
+* {
+	font-family: Geist, sans-serif;
+}
+
 :root {
 	--border-color: #5f5f5f;
 	--tile-color: #9f9f9f;
 	--tile-color-hover: #afafaf;
 	--tile-color-dug: #c0c0c0;
 	--tile-color-dug-hover: #b0b0b0;
+
+	--ui-lightgray: #d5d5d5;
+	--ui-gray: var(--tile-color);
+	--ui-darkgray: darkslategray;
 
 	--face-size: 35px;
 	--info-bar-icon-size: 35px;
@@ -15,12 +28,25 @@ html, body {
 	height: 100%;
 }
 
-h1, h2, h3, p {
+h1, h2, h3, h4, p {
 	margin: 0;
+}
+
+button {
+	transition: border 0.05s;
+	background-color: #e5e5e5;
+	border: 1px solid #c5c5c5;
+	border-radius: 4px;
+	outline: none;
+}
+button:hover {
+	transition: border 0.05s;
+	border: 1px solid var(--ui-gray);
 }
 
 #content {
 	display: flex;
+	justify-content: center;
 }
 
 #minefield-wrapper {
@@ -49,12 +75,19 @@ h1, h2, h3, p {
 	border-left: 1px solid var(--border-color);
 }
 
+#menu {
+	max-width: 300px;
+	width: 300px;
+}
+
 #info {
-	margin-left: 5px;
-	margin-right: 10px;
+	max-width: 300px;
+	width: 300px;
 }
 
 #main-menu-ctx {
+	width: 100%;
+	text-align: right;
 	font-size: 15px;
 }
 
@@ -102,6 +135,45 @@ h1, h2, h3, p {
 	padding-left: 30px;
 }
 
+.panel {
+	border: 1px solid var(--ui-gray);
+	border-radius: 6px;
+	padding: 8px;
+	margin: 10px 10px 0px 10px;
+	height: fit-content;
+}
+
+.panel-section-header {
+	display: flex;
+	max-height: 20px;
+}
+
+.panel .separator {
+	height: 1px;
+	margin: 10px 0px 10px 0px;
+	background-color: var(--ui-lightgray);
+}
+
+.panel h3 {
+	font-weight: 700;
+}
+
+.panel h4 {
+	min-width: fit-content;
+	font-weight: 600;
+	color: var(--ui-darkgray);
+	font-size: 16px;
+}
+
+.btn-row {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+}
+.btn-row button {
+	width: 100%;
+}
+
 .info-bar-text-wrapper {
 	max-width: 60px;
 	display: flex;
@@ -111,7 +183,7 @@ h1, h2, h3, p {
 
 .info-text {
 	font-size: 16px;
-	color: darkslategray;
+	color: var(--ui-darkgray);
 	font-style: italic;
 	margin-bottom: 5px;
 }
