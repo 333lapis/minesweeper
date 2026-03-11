@@ -185,6 +185,8 @@ class Minefield {
 		const tileElement = this.queryTileElement(x, y);
 		const adjacentTiles = this.getAdjacentTiles(x, y);
 
+		if (!JSON.parse(tileElement.dataset.dug)) return;
+
 		let adjacentFlagCount = 0;
 		adjacentTiles.forEach((i) => {
 			if (JSON.parse(i.dataset.flagged)) adjacentFlagCount++;
