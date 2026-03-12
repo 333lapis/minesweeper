@@ -173,7 +173,10 @@ class Minefield {
 					autoDigChecked: false
 				});
 
-				tileElement.addEventListener("mousedown", (event) => { this.tileInteract(event); });
+				tileElement.addEventListener("mousedown", (event) => {
+					if (event.button === 1) event.preventDefault();
+					this.tileInteract(event);
+				});
 				tileElement.addEventListener("contextmenu", (event) => {
 					event.preventDefault();
 				});
