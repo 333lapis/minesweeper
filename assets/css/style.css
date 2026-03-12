@@ -51,6 +51,7 @@ input[type=submit]:hover {
 }
 
 input[type=number] {
+	appearance: textfield;
 	margin-bottom: 5px;
 	width: 80px;
 	outline: none;

@@ -129,6 +129,9 @@ class Minefield {
 	}
 
 	setup(width, height, mineCount) {
+		clearInterval(this.timerInterval);
+		timerElement.textContent = "0";
+
 		this.width = width;
 		this.height = height;
 		this.mineCount = mineCount;
@@ -146,7 +149,6 @@ class Minefield {
 			faceElement.classList.remove(i);
 		});
 		flagCounterElement.textContent = this.remainingFlags;
-		clearInterval(this.timerInterval);
 
 		for (let x = 0; x < this.width; x++) {
 			const tileColElement = document.createElement("div");
