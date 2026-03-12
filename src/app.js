@@ -210,6 +210,7 @@ class Minefield {
 			event?.code === "KeyX"
 		) {
 			action = "chord";
+			faceElement.classList.add("face-suspense");
 			this.chord(x, y);
 		} else if (
 			event?.button === 2 ||
