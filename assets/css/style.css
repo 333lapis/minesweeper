@@ -32,16 +32,39 @@ h1, h2, h3, h4, p {
 	margin: 0;
 }
 
-button {
+label {
+	cursor: text;
+}
+
+button,
+input[type=submit] {
 	transition: border 0.05s;
 	background-color: #e5e5e5;
 	border: 1px solid #c5c5c5;
 	border-radius: 4px;
 	outline: none;
 }
-button:hover {
+button:hover,
+input[type=submit]:hover {
 	transition: border 0.05s;
 	border: 1px solid var(--ui-gray);
+}
+
+input[type=number] {
+	margin-bottom: 5px;
+	width: 80px;
+	outline: none;
+	border-radius: 4px;
+	border: 1px solid var(--ui-gray);
+
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[type=number]:focus {
+	border: 1px solid blueviolet;
 }
 
 #content {
@@ -154,6 +177,11 @@ button:hover {
 	background-color: var(--ui-lightgray);
 }
 
+.panel .vert-buffer {
+	height: 20px;
+	visibility: hidden;
+}
+
 .panel h3 {
 	font-weight: 700;
 }
@@ -170,7 +198,11 @@ button:hover {
 	flex-direction: row;
 	gap: 5px;
 }
-.btn-row button {
+.btn-row button,
+.btn-row input[type=submit] {
+	width: 100%;
+}
+.btn-row label {
 	width: 100%;
 }
 

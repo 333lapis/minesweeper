@@ -19,6 +19,104 @@ function gameOverScreen(isWin) {
 	console.log(isWin ? "you win!" : "you lose :(");
 }
 
+function setMenu(data) {
+	const menuContentElement = document.getElementById("menu-content");
+	const menuHeaderElement = document.getElementById("menu-header");
+
+	menuHeaderElement.textContent = data?.header ?? "uhh";
+	menuContentElement.innerHTML = data?.innerHTML ?? "hello";
+
+	if (data?.header !== "minesweeper") {
+		menuContentElement.innerHTML += `<div class="separator"></div><div class="btn-row"><button id="reset-menu-btn">back</button></div>`;
+		document.getElementById("reset-menu-btn").addEventListener("click", resetMenu);
+	}
+}
+
+function resetMenu() {
+	setMenu({
+		header: "minesweeper",
+		innerHTML: defaultMenuContent
+	});
+
+	timerElement = document.getElementById("timer");
+	faceElement = document.getElementById("face");
+	flagCounterElement = document.getElementById("flag-counter");
+	mainMenuCtxElement = document.getElementById("main-menu-ctx");
+
+	document.getElementById("new-game-beginner").addEventListener("click", () => {
+		minefield.setupFromPreset(DifficultyPreset.BEGINNER);
+	});
+	document.getElementById("new-game-beginner").addEventListener("mouseenter", () => {
+		mainMenuCtxElement.textContent = "9x9 (10 mines)";
+	});
+	document.getElementById("new-game-intermediate").addEventListener("click", () => {
+		minefield.setupFromPreset(DifficultyPreset.INTERMEDIATE);
+	});
+	document.getElementById("new-game-intermediate").addEventListener("mouseenter", () => {
+		mainMenuCtxElement.textContent = "16x16 (40 mines)";
+	});
+	document.getElementById("new-game-expert").addEventListener("click", () => {
+		minefield.setupFromPreset(DifficultyPreset.EXPERT);
+	});
+	document.getElementById("new-game-expert").addEventListener("mouseenter", () => {
+		mainMenuCtxElement.textContent = "30x16 (99 mines)";
+	});
+	document.getElementById("new-game-custom").addEventListener("click", () => {
+		setMenu({
+			header: "custom",
+			innerHTML: `
+			<form id="custom-game-creator">
+				<div class="btn-row">
+					<label for="width">width: </label>
+					<input type="number" name="width" min="1" max="120" placeholder="16" />
+				</div>
+				<div class="btn-row">
+					<label for="height">height: </label>
+					<input type="number" name="height" min="1" max="120" placeholder="16" />
+				</div>
+				<div class="btn-row">
+					<label for="mines">mines: </label>
+					<input type="number" name="mines" min="1" max="8000" placeholder="40" />
+				</div>
+				<div class="vert-buffer"></div>
+				<div class="btn-row">
+					<input type="submit" value="create" />
+				</div>
+			</form>
+			`
+		});
+		document.getElementById("custom-game-creator").addEventListener("submit", (event) => {
+			event.preventDefault();
+
+			const formData = new FormData(event.target);
+			const width = formData.get("width") !== ""
+				? JSON.parse(formData.get("width")) 
+				: 16;
+			const height = formData.get("height") !== ""
+				? JSON.parse(formData.get("height")) 
+				: 16;
+			const mines = formData.get("mines") !== ""
+				? JSON.parse(formData.get("mines")) 
+				: 40;
+
+			minefield.setup(
+				width,
+				height,
+				mines
+			);
+		});
+	});
+	document.getElementById("new-game-custom").addEventListener("mouseenter", () => {
+		mainMenuCtxElement.textContent = "create a custom board";
+	});
+
+	document.querySelectorAll(".main-menu-btn").forEach((element) => {
+		element.addEventListener("mouseleave", () => {
+			mainMenuCtxElement.textContent = "";
+		});
+	});
+}
+
 class Minefield {
 	constructor(width, height, mineCount) {
 		this.minefieldElement = document.getElementById("minefield");
@@ -333,11 +431,11 @@ class Minefield {
 }
 
 let hoveredElement = null;
-const timerElement = document.getElementById("timer");
-const faceElement = document.getElementById("face");
-const flagCounterElement = document.getElementById("flag-counter");
+let timerElement, faceElement, flagCounterElement, mainMenuCtxElement;
+const defaultMenuContent = document.getElementById("menu-content").innerHTML;
+resetMenu();
+
 const minefield = new Minefield(9, 9, 10);
-const mainMenuCtxElement = document.getElementById("main-menu-ctx");
 
 document.addEventListener("mousemove", (event) => {
 	hoveredElement = document.elementFromPoint(event.clientX, event.clientY);
@@ -357,36 +455,4 @@ document.getElementById("save").addEventListener("click", () => {
 	const saveData = btoa(JSON.stringify(minefield.toJSON()));
 	navigator.clipboard.writeText(saveData);
 	console.log(saveData);
-});
-/*document.getElementById("save").addEventListener("mouseenter", () => {
-	mainMenuCtxElement.textContent = "save game (copies save data to clipboard)";
-});*/
-
-
-document.getElementById("new-game-beginner").addEventListener("click", () => {
-	minefield.setupFromPreset(DifficultyPreset.BEGINNER);
-});
-document.getElementById("new-game-beginner").addEventListener("mouseenter", () => {
-	mainMenuCtxElement.textContent = "9x9 (10 mines)";
-});
-document.getElementById("new-game-intermediate").addEventListener("click", () => {
-	minefield.setupFromPreset(DifficultyPreset.INTERMEDIATE);
-});
-document.getElementById("new-game-intermediate").addEventListener("mouseenter", () => {
-	mainMenuCtxElement.textContent = "16x16 (40 mines)";
-});
-document.getElementById("new-game-expert").addEventListener("click", () => {
-	minefield.setupFromPreset(DifficultyPreset.EXPERT);
-});
-document.getElementById("new-game-expert").addEventListener("mouseenter", () => {
-	mainMenuCtxElement.textContent = "30x16 (99 mines)";
-});
-document.getElementById("new-game-custom").addEventListener("mouseenter", () => {
-	mainMenuCtxElement.textContent = "create a custom board";
-});
-
-document.querySelectorAll(".main-menu-btn").forEach((element) => {
-	element.addEventListener("mouseleave", () => {
-		mainMenuCtxElement.textContent = "";
-	});
 });
