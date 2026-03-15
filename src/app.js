@@ -80,7 +80,7 @@ function resetMenu() {
 				</div>
 				<div class="vert-buffer"></div>
 				<div class="btn-row">
-					<input type="submit" value="create" />
+					<input type="submit" value="create" class="btn-primary" />
 				</div>
 			</form>
 			`

@@ -38,7 +38,7 @@ label {
 
 button,
 input[type=submit] {
-	transition: border 0.05s;
+	transition: border 0.1s;
 	background-color: #e5e5e5;
 	border: 1px solid #c5c5c5;
 	border-radius: 4px;
@@ -46,7 +46,7 @@ input[type=submit] {
 }
 button:hover,
 input[type=submit]:hover {
-	transition: border 0.05s;
+	transition: border 0.1s;
 	border: 1px solid var(--ui-gray);
 }
 
@@ -157,6 +157,30 @@ input[type=number]:focus {
 
 #timer {
 	padding-left: 30px;
+}
+
+#new-game-beginner {
+	background-color: #b9fbc0;
+	border-color: #5ff66e;
+}
+#new-game-beginner:hover {
+	border-color: #0ccd1f;
+}
+
+#new-game-intermediate {
+	background-color: #fbf8cc;
+	border-color: #f1e753;
+}
+#new-game-intermediate:hover {
+	border-color: #d2c511;
+}
+
+#new-game-expert {
+	background-color: #fde4cf;
+	border-color: #fabf8f;
+}
+#new-game-expert:hover {
+	border-color: #f68a31;
 }
 
 .panel {
@@ -270,4 +294,12 @@ input[type=number]:focus {
 .tile.flagged {
 	background-image: url("../spritesheet.png");
 	background-position: 0px -30px;
+}
+
+.btn-primary {
+	border-color: #a3c4f3 !important;
+	background-color: #8eecf5 !important;
+}
+.btn-primary:hover {
+	border-color: #71a5ed !important;
 }
