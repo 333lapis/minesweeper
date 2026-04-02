@@ -1,3 +1,5 @@
+import { saveBoard } from "./saveManager.js";
+
 const FLAG_ICON_TEXT = "🚩";
 const MINE_ICON_TEXT = "💣";
 const INCORRECT_FLAG_ICON_TEXT = "❌";
@@ -117,6 +119,21 @@ function resetMenu() {
 	});
 }
 
+class Tile {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+		this.flagged = false;
+		this.dug = false;
+		this.isMine = false;
+		this.autoDigChecked = false;
+		this.adjacentMines = 0;
+		this.element = document.createElement("div");
+		this.element.draggable = false;
+		this.element.classList.add("tile");
+	}
+}
+
 class Minefield {
 	constructor(width, height, mineCount) {
 		this.minefieldElement = document.getElementById("minefield");
@@ -156,10 +173,10 @@ class Minefield {
 			tileColElement.draggable = false;
 
 			for (let y = 0; y < this.height; y++) {
-				const tileElement = document.createElement("div");
+				const tile = new Tile(x, y);
+				const tileElement = tile.element;
 				
 				tileElement.classList.add("tile");
-				tileElement.draggable = false;
 				tileElement.dataset.x = x;
 				tileElement.dataset.y = y;
 				tileElement.dataset.flagged = false;
@@ -167,13 +184,14 @@ class Minefield {
 				tileElement.dataset.isMine = false;
 				tileElement.dataset.autoDigChecked = false;
 
-				this.state.set(`${x},${y}`, {
+				/*this.state.set(`${x},${y}`, {
 					element: tileElement,
 					flagged: false,
 					dug: false,
 					isMine: false,
 					autoDigChecked: false
-				});
+				});*/
+				this.state.set(`${x},${y}`, tile);
 
 				tileElement.addEventListener("mousedown", (event) => {
 					if (event.button === 1) event.preventDefault();
@@ -188,6 +206,7 @@ class Minefield {
 
 			this.minefieldElement.appendChild(tileColElement);
 		}
+		console.log(this.state);
 		console.log(`created minefield: ${width}x${height} (${mineCount} mines)`);
 	}
 
@@ -196,7 +215,7 @@ class Minefield {
 			!hoveredElement.classList.contains("tile") ||
 			!this.interactable
 		) return;
-		let action;
+		let action; // for logging
 		const x = JSON.parse(hoveredElement.dataset.x);
 		const y = JSON.parse(hoveredElement.dataset.y);
 
@@ -232,13 +251,18 @@ class Minefield {
 		);
 	}
 
+	queryTile(x, y) {
+		return this.state.get(`${x},${y}`);
+	}
+
 	queryTileElement(x, y) {
-		return this.state.get(`${x},${y}`)?.element;
+		return this.queryTile(x, y)?.element;
 	}
 
 	getAdjacentTiles(x, y) {
+		const tile = this.queryTile(x, y);
 		const tileElement = this.queryTileElement(x, y);
-		if (!tileElement) return null;
+		if (!tile) return null;
 
 		const output = [];
 		const adjacentTiles = [
@@ -252,7 +276,7 @@ class Minefield {
 			{ x: x - 1, y: y },		// left
 		];
 		for (const i of adjacentTiles) {
-			const adjacentTile = this.queryTileElement(i.x, i.y);
+			const adjacentTile = this.queryTile(i.x, i.y);
 			if (!adjacentTile) continue;
 
 			output.push(adjacentTile);
@@ -266,6 +290,9 @@ class Minefield {
 			width: this.width,
 			height: this.height,
 			mineCount: this.mineCount,
+			gameStarted: this.gameStarted,
+			timer: this.timer,
+			state: Object.fromEntries(this.state),
 			tiles: []
 		};
 
@@ -286,56 +313,56 @@ class Minefield {
 	}
 
 	chord(x, y) {
-		const tileElement = this.queryTileElement(x, y);
+		const tile = this.queryTile(x, y);
 		const adjacentTiles = this.getAdjacentTiles(x, y);
 
-		if (!JSON.parse(tileElement.dataset.dug)) return;
+		if (!tile.dug) return;
 
 		let adjacentFlagCount = 0;
-		adjacentTiles.forEach((i) => {
-			if (JSON.parse(i.dataset.flagged)) adjacentFlagCount++;
+		adjacentTiles.forEach((adjacentTile) => {
+			if (adjacentTile.flagged) adjacentFlagCount++;
 		});
-		if (adjacentFlagCount === JSON.parse(tileElement.dataset.adjacentMines)) {
-			adjacentTiles.forEach((i) => {
-				this.dig(JSON.parse(i.dataset.x), JSON.parse(i.dataset.y));
+		if (adjacentFlagCount === tile.adjacentMines) {
+			adjacentTiles.forEach((adjacentTile) => {
+				this.dig(adjacentTile.x, adjacentTile.y);
 			});
 		}
 	}
 
 	toggleFlag(x, y) {
-		const tileElement = this.queryTileElement(x, y);
-		if (!tileElement || JSON.parse(tileElement.dataset.dug)) return;
-		const flagged = JSON.parse(tileElement.dataset.flagged);
+		const tile = this.queryTile(x, y);
+		if (!tile || tile.dug) return;
+		const flagged = tile.flagged;
 
 		if (flagged) {
-			tileElement.classList.remove("flagged");
+			tile.element.classList.remove("flagged");
 			this.remainingFlags++;
 		} else {
-			tileElement.classList.add("flagged");
+			tile.element.classList.add("flagged");
 			this.remainingFlags--;
 		}
 		flagCounterElement.textContent = this.remainingFlags;
 
 		//tileElement.textContent = flagged ? "" : FLAG_ICON_TEXT;
-		tileElement.dataset.flagged = !flagged;
+		tile.flagged = !flagged;
 	}
 
 	dig(x, y) {
-		const tileElement = this.queryTileElement(x, y);
-		if (!tileElement || JSON.parse(tileElement.dataset.dug)) return;
+		const tile = this.queryTile(x, y);
+		if (!tile || tile.dug) return;
 
 		if (!this.gameStarted) {
 			this.startTile = { x: x, y: y };
 			this.genMines();
 		}
 
-		if (JSON.parse(tileElement.dataset.flagged)) {
+		if (tile.flagged) {
 			//this.toggleFlag(x, y);
 			return;
 		}
 
-		if (JSON.parse(tileElement.dataset.isMine)) {
-			tileElement.style.backgroundColor = "red";
+		if (tile.isMine) {
+			tile.element.style.backgroundColor = "red";
 			this.revealMines();
 			gameOverScreen(false);
 			this.interactable = false;
@@ -347,27 +374,27 @@ class Minefield {
 		
 		const adjacentTiles = this.getAdjacentTiles(x, y);
 
-		if (JSON.parse(tileElement.dataset.adjacentMines) === 0) {
+		if (tile.adjacentMines === 0) {
 			for (const i of adjacentTiles) {
-				if (!JSON.parse(i.dataset.autoDigChecked)) {
-					i.dataset.autoDigChecked = true;
-					this.dig(JSON.parse(i.dataset.x), JSON.parse(i.dataset.y));
+				if (!i.autoDigChecked) {
+					i.autoDigChecked = true;
+					this.dig(i.x, i.y);
 				}
 			}
 		}
 
 		if (
-			!JSON.parse(tileElement.dataset.isMine) &&
-			JSON.parse(tileElement.dataset.adjacentMines) > 0
+			!tile.isMine &&
+			tile.adjacentMines > 0
 		) {
-			tileElement.textContent = tileElement.dataset.adjacentMines;
+			tile.element.textContent = tile.adjacentMines;
 		}
 
 		if (!this.clearedTiles.includes(`${x},${y}`)) {
 			this.clearedTiles.push(`${x},${y}`);
 		}
-		tileElement.dataset.dug = true;
-		tileElement.classList.add("dug");
+		tile.dug = true;
+		tile.element.classList.add("dug");
 
 		console.log(`clearedTiles: ${this.clearedTiles.length}/${(this.width * this.height) - this.mineCount}`);
 		if (this.clearedTiles.length === (this.width * this.height) - this.mineCount) {
@@ -388,11 +415,12 @@ class Minefield {
 		while (mines.size < this.mineCount) {
 			const x = randNum(this.width);
 			const y = randNum(this.height);
+			const tile = this.queryTile(x, y);
 			const tileElement = this.queryTileElement(x, y);
 
 			if (
 				mines.has(`${x},${y}`) ||
-				!tileElement ||
+				!tile ||
 				(
 					!(x < this.startTile.x - 1) &&
 					!(x > this.startTile.x + 1) &&
@@ -401,21 +429,19 @@ class Minefield {
 				)
 			) continue;
 
-			tileElement.dataset.isMine = true;
+			tile.isMine = true;
 			mines.add(`${x},${y}`);
 		}
 
-		for (const tileColElement of this.minefieldElement.childNodes) {
-			for (const tileElement of tileColElement.childNodes) {
-				let adjacentMineCount = 0;
-				const adjacentTiles = this.getAdjacentTiles(JSON.parse(tileElement.dataset.x), JSON.parse(tileElement.dataset.y));
-				
-				adjacentTiles.forEach((i) => {
-					if (JSON.parse(i.dataset.isMine)) adjacentMineCount++;
-				});
-				tileElement.dataset.adjacentMines = adjacentMineCount;
-			}
-		}
+		this.state.forEach((tile) => {
+			let adjacentMineCount = 0;
+			const adjacentTiles = this.getAdjacentTiles(tile.x, tile.y);
+
+			adjacentTiles.forEach((adjacentTile) => {
+				if (adjacentTile.isMine) adjacentMineCount++;
+			});
+			tile.adjacentMines = adjacentMineCount;
+		});
 
 		this.gameStarted = true;
 		this.timerInterval = setInterval(() => {
@@ -425,14 +451,11 @@ class Minefield {
 	}
 
 	revealMines() {
-		for (const tileColElement of this.minefieldElement.childNodes) {
-			for (const tileElement of tileColElement.childNodes) {
-				if (JSON.parse(tileElement.dataset.isMine) && !JSON.parse(tileElement.dataset.flagged)) {
-					tileElement.classList.add("mine");
-					//tileElement.textContent = MINE_ICON_TEXT;
-				}
+		this.state.forEach((tile) => {
+			if (tile.isMine && !tile.flagged) {
+				tile.element.classList.add("mine");
 			}
-		}
+		});
 	}
 }
 
@@ -458,7 +481,9 @@ document.addEventListener("keyup", () => {
 });
 
 document.getElementById("save").addEventListener("click", () => {
-	const saveData = btoa(JSON.stringify(minefield.toJSON()));
+	console.log(minefield.toJSON());
+	return;
+	const saveData = saveBoard(minefield);
 	navigator.clipboard.writeText(saveData);
 	console.log(saveData);
 });
