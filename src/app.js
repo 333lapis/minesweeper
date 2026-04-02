@@ -317,7 +317,7 @@ class Minefield {
 
 	toggleFlag(x, y) {
 		const tile = this.queryTile(x, y);
-		if (!tile || tile.dug) return;
+		if (!tile || tile.dug || !this.gameStarted) return;
 		const flagged = tile.flagged;
 
 		if (flagged) {
