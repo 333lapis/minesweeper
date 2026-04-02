@@ -292,22 +292,8 @@ class Minefield {
 			mineCount: this.mineCount,
 			gameStarted: this.gameStarted,
 			timer: this.timer,
-			state: Object.fromEntries(this.state),
-			tiles: []
+			state: Object.fromEntries(this.state)
 		};
-
-		for (const tileColElement of this.minefieldElement.childNodes) {
-			for (const tileElement of tileColElement.childNodes) {
-				output.tiles.push({
-					x: JSON.parse(tileElement.dataset.x),
-					y: JSON.parse(tileElement.dataset.y),
-					flagged: JSON.parse(tileElement.dataset.flagged),
-					dug: JSON.parse(tileElement.dataset.dug),
-					isMine: JSON.parse(tileElement.dataset.isMine),
-					autoDigChecked: JSON.parse(tileElement.dataset.autoDigChecked)
-				});
-			}
-		}
 
 		return output;
 	}

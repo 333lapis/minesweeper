@@ -24,6 +24,7 @@ export function loadData(saveData) {
 	if (version === null || saveType === null) {
 		throw new Error("invalid save data!! (missing version or saveType)");
 	}
+	if (version !== VERSION) throw new Error("invalid version");
 
 	switch (saveType) {
 		case SaveType.BOARD:
@@ -37,5 +38,4 @@ export function loadData(saveData) {
 		default:
 			throw new Error("invalid saveType");
 	}
-	if (version !== VERSION) throw new Error("invalid version");
 }
